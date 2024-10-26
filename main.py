@@ -33,6 +33,20 @@ def explore_scene(gemini_key):
     except Exception as e:
         print(f"Error in explore_scene: {str(e)}")
 
+def handle_currency_intent():
+    try:
+        CameraSensor().capture("image.jpg")
+        print("Image captured")
+        gemini = GeminiHandler(api_key=os.environ.get("API_KEY"))
+        gemini.generate_with_tts(
+            "Analyze the image and identify the currency. Provide the name of the currency and its denomination."
+            "If there are multiple currencies, provide details for each one.",
+            image_path="image.jpg",
+        );
+        print("Text to speech completed")
+
+    except Exception as e:
+        print(f"Error handling currency intent: {str(e)}")
 
 def handle_gpt_intent(transcript: str):
     try:
@@ -66,6 +80,8 @@ def create_touch_handler(state, wit_client):
                     print("Recording stopped")
                     if intent == IntentType.GPT:
                         handle_gpt_intent(transcript)
+                    elif intent == IntentType.CURRENCY:
+                        handle_currency_intent()
                 else:
                     explore_scene(os.environ.get("API_KEY"))
 
