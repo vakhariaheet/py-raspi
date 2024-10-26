@@ -22,7 +22,7 @@ def explore_scene():
     print("Text to speech completed");
 
 def main():
-    witClient = WitAiClient(wit_api_key=os.environ('WIT_API_KEY'));
+    witClient = WitAiClient(wit_api_key=os.environ.get('WIT_API_KEY'));
     def on_touch(props):
         is_recording = False;
         if TouchType.SINGLE:
