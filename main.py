@@ -25,7 +25,8 @@ def main():
     witClient = WitAiClient(wit_api_key=os.environ.get('WIT_API_KEY'));
     is_recording = False;
     def on_touch(props):
-    
+        global is_recording;
+        print('Is recording: ', is_recording);
         if TouchType.SINGLE:
             print("Single touch detected");
             if is_recording:
@@ -39,8 +40,7 @@ def main():
                 print("Recording stopped");
             else:
                 explore_scene();
-            
-            
+
         elif TouchType.DOUBLE:
             print("Double touch detected");
             witClient.record(timeout=10);
