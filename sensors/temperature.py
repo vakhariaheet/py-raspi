@@ -1,6 +1,7 @@
 import time
 import RPi.GPIO as GPIO
-import Adafruit_DHT
+import adafruit_dht
+
 
 class DHT11Sensor:
     """
