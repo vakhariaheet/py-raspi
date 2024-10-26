@@ -63,7 +63,7 @@ class GeminiHandler:
                 except Exception:
                     pass
 
-    async def generate_with_tts(self, prompt, image_path=None):
+    def generate_with_tts(self, prompt, image_path=None):
         """
         Generate response from Gemini and stream it with real-time TTS
         
@@ -75,14 +75,14 @@ class GeminiHandler:
             # Handle image if provided
             if image_path:
                 img = Image.open(image_path)
-                response = await self.vision_model.generate_content_async([prompt, img],stream=True)
+                response = self.vision_model.generate_content([prompt, img],stream=True)
             else:
-                response = await self.model.generate_content_async(prompt,stream=True)
+                response = self.model.generate_content(prompt,stream=True)
             
             chunk_index = 0
             current_chunk = ""
             
-            async for chunk in response:
+            for chunk in response:
                 if hasattr(chunk, 'text'):
                     # Split on sentence boundaries
                     sentences = chunk.text.split('.')
