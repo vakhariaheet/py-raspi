@@ -2,6 +2,7 @@ import RPi.GPIO as GPIO;
 from sensors.touch import TouchSensor,TouchType;
 from sensors.temperature import DHT11;
 from sensors.camera import CameraSensor;
+from services.gemini import GeminiHandler
 import pygame;
 import time;
 dht11 = DHT11(pin=27);
@@ -12,7 +13,11 @@ def main():
             result = dht11.read();
             print(str(result));
             CameraSensor().capture("image.jpg");
+            gemini = GeminiHandler();
+            gemini.generate_with_tts("Describe this scene as if narrating to someone who can't see it. Be detailed but natural, avoiding any mention of an image. Use only elements present in the scene. Keep your description concise, under 100 words, while capturing the essence of what's visible.",image_path="image.jpg");
+            print("Text to speech completed");
         print(f'Touch Detected {props}');
+    
     touch_sensor = TouchSensor(17,on_touch);
     print("Touch sensor is ready! Press Ctrl+C to exit")
     print("Waiting for touches...")

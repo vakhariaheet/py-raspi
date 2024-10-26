@@ -10,7 +10,6 @@ class CameraSensor:
         self.camera.take_photo(filename);
         sound = pygame.mixer.Sound(os.path.join('assets','sfx','capture.mp3'));
         sound.play();
-        # self.camera.stop_preview();
     
 
     def close(self):
