@@ -36,7 +36,7 @@ def explore_scene(gemini_key):
 
 def handle_gpt_intent(transcript: str):
     try:
-        prompt = transcript.replace(r"Hey Visio", "")
+        prompt = transcript.replace(r"Hey Visio", "").strip();
         print(f"Prompt: {prompt}")
         gemini = GeminiHandler(api_key=os.environ.get("API_KEY"))
         gemini.generate_with_tts(f"Generate text based on the provided prompt. Remove any phrases like 'ask visio' or 'hey visio.' Ensure the text is concise (under 100 words unless otherwise specified). Avoid introductory phrases such as 'here is the generated text.' prompt: {prompt}")
