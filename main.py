@@ -8,6 +8,8 @@ import os;
 import time;
 dht11 = DHT11(pin=27);
 pygame.init()
+gemini_key = os.environ.get('API_KEY')
+
 def main():
     def on_touch(props):
         if TouchType.SINGLE:
@@ -15,7 +17,8 @@ def main():
             print(str(result));
             CameraSensor().capture("image.jpg");
             print("Image captured");
-            gemini = GeminiHandler(api_key=os.getenv('API_KEY'));
+            print(f"Gemini Key: {gemini_key}");
+            gemini = GeminiHandler(api_key=gemini_key);
             gemini.generate_with_tts("Describe this scene as if narrating to someone who can't see it. Be detailed but natural, avoiding any mention of an image. Use only elements present in the scene. Keep your description concise, under 100 words, while capturing the essence of what's visible.",image_path="image.jpg");
             print("Text to speech completed");
         print(f'Touch Detected {props}');
