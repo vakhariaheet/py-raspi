@@ -117,40 +117,54 @@ class WitAiClient:
         """
         headers = {
             'Authorization': f'Bearer {self.wit_api_key}',
+            'Content-Type': 'audio/wav',  # Added content type header
         }
         
-        with open(audio_file, 'rb') as f:
+        try:
+            with open(audio_file, 'rb') as f:
+                audio_data = f.read()
+                
             resp = requests.post(
                 'https://api.wit.ai/speech',
                 headers=headers,
-                data=f,
-                params={'v': '20240101'}
+                data=audio_data,  # Send raw audio data
+                params={
+                    'v': '20240101',
+                    'content-type': 'audio/wav'  # Added content type parameter
+                }
             )
-        
-        if resp.status_code != 200:
-            raise Exception(f"Wit.ai API error: {resp.status_code} - {resp.text}")
             
-        result = resp.json()
-        
-        # Extract intent
-        intent = None
-        if 'intents' in result and result['intents']:
-            intent_name = result['intents'][0]['name']
-            try:
-                intent = IntentType(intent_name)
-            except ValueError:
-                intent = None
-        
-        # Extract entities and other data
-        data = {
-            'entities': result.get('entities', {}),
-            'traits': result.get('traits', {}),
-        }
-        
-        # Get transcript
-        transcript = result.get('text', '')
-        
-        return intent, data, transcript
+            if resp.status_code != 200:
+                print(f"Wit.ai API error response: {resp.text}")
+                raise Exception(f"Wit.ai API error: {resp.status_code} - {resp.text}")
+                
+            result = resp.json()
+            
+            # Extract intent
+            intent = None
+            if 'intents' in result and result['intents']:
+                intent_name = result['intents'][0]['name']
+                try:
+                    intent = IntentType(intent_name)
+                except ValueError:
+                    print(f"Unknown intent received: {intent_name}")
+                    intent = None
+            
+            # Extract entities and other data
+            data = {
+                'entities': result.get('entities', {}),
+                'traits': result.get('traits', {}),
+            }
+            
+            # Get transcript
+            transcript = result.get('text', '')
+            
+            return intent, data, transcript
+            
+        except Exception as e:
+            print(f"Error processing audio: {str(e)}")
+            # Return empty results in case of error
+            return None, {}, ""
 
     def listen_and_process(self, timeout: Optional[float] = None) -> Tuple[IntentType, Dict[str, Any], str]:
         """Record audio and process it through Wit.ai in one step.
@@ -175,4 +189,7 @@ class WitAiClient:
 
     def __del__(self):
         """Cleanup audio resources."""
-        self.audio.terminate()
+        try:
+            self.audio.terminate()
+        except:
+            pass
