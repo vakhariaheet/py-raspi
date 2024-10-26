@@ -81,8 +81,3 @@ class DHT11Sensor:
             return (temp * 9/5) + 32
         return None
     
-    def __del__(self):
-        """
-        Clean up resources when object is deleted
-        """
-        self.dht_device.exit()
