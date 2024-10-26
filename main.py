@@ -2,8 +2,10 @@ import RPi.GPIO as GPIO;
 from sensors.touch import TouchSensor,TouchType;
 from sensors.temperature import DHT11;
 from sensors.camera import CameraSensor;
+import pygame;
 import time;
 dht11 = DHT11(pin=27);
+pygame.init()
 def main():
     def on_touch(props):
         if TouchType.SINGLE:
