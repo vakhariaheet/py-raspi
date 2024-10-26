@@ -54,7 +54,7 @@ def create_touch_handler(state, wit_client):
                 print("Double touch detected")
                 wit_client.record(timeout=10)
                 state.is_recording = True
-                play_sound("assets/sfx/start.mp3")
+                play_sound("assets/sfx/end.mp3")
             
             print(f'Touch Detected {props}')
             

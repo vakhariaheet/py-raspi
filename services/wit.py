@@ -5,6 +5,7 @@ import requests
 import json
 import threading
 import time
+import re
 from pathlib import Path
 from typing import Tuple, Optional, Dict, Any
 
@@ -16,15 +17,16 @@ class IntentType(Enum):
     MAPS = "maps"
     GPT = "gpt"
 
-def parse_wit_respose(response:str)->Dict:
+def parse_wit_respose(response:str)->dict:
     try:
         # First Get Last JSON object from the string response using regex \n{.*}$
-        response = response.split(r"\n(?={)")[-1];
-        # Parse the JSON object
-        return json.loads(response)
+        # Extract all JSON-like structures using a regular expression
+        json_strings = re.split(r'\n(?=\{)', response)
+        last_json = json.loads(json_strings[-1])        
+        return last_json;
     except Exception as e:
         print(f"Error parsing Wit.ai response: {str(e)}")
-        return {}
+    return {}
 
 class WitAiClient:
     def __init__(self, wit_api_key: str, temp_dir: str = "/tmp"):

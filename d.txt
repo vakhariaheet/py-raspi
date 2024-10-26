@@ -1,0 +1,266 @@
+{
+  "text": "How",
+  "type": "PARTIAL_TRANSCRIPTION"
+}
+{
+  "entities": {},
+  "intents": [
+    {
+      "confidence": 0.9288,
+      "id": "1048434629118182",
+      "name": "inquiry"
+    }
+  ],
+  "speech": {
+    "confidence": 0.6927,
+    "tokens": [
+      {
+        "end": 360,
+        "start": 0,
+        "token": "How"
+      }
+    ]
+  },
+  "text": "How",
+  "traits": {},
+  "type": "PARTIAL_UNDERSTANDING"
+}
+{
+  "text": "How many",
+  "type": "PARTIAL_TRANSCRIPTION"
+}
+{
+  "text": "How many people",
+  "type": "PARTIAL_TRANSCRIPTION"
+}
+{
+  "entities": {},
+  "intents": [
+    {
+      "confidence": 0.9823,
+      "id": "1048434629118182",
+      "name": "inquiry"
+    }
+  ],
+  "speech": {
+    "confidence": 0.7889,
+    "tokens": [
+      {
+        "end": 360,
+        "start": 0,
+        "token": "How"
+      },
+      {
+        "end": 600,
+        "start": 360,
+        "token": "many"
+      }
+    ]
+  },
+  "text": "How many",
+  "traits": {},
+  "type": "PARTIAL_UNDERSTANDING"
+}
+{
+  "entities": {
+    "metric:metric": [
+      {
+        "body": "people",
+        "confidence": 0.9995,
+        "end": 15,
+        "entities": {},
+        "id": "338077554969492",
+        "name": "metric",
+        "role": "metric",
+        "start": 9,
+        "type": "value",
+        "value": "metric_visitor"
+      }
+    ]
+  },
+  "intents": [
+    {
+      "confidence": 0.988,
+      "id": "1048434629118182",
+      "name": "inquiry"
+    }
+  ],
+  "speech": {
+    "confidence": 0.7014,
+    "tokens": [
+      {
+        "end": 360,
+        "start": 0,
+        "token": "How"
+      },
+      {
+        "end": 600,
+        "start": 360,
+        "token": "many"
+      },
+      {
+        "end": 840,
+        "start": 600,
+        "token": "people"
+      }
+    ]
+  },
+  "text": "How many people",
+  "traits": {},
+  "type": "PARTIAL_UNDERSTANDING"
+}
+{
+  "text": "How many people between",
+  "type": "PARTIAL_TRANSCRIPTION"
+}
+{
+  "entities": {
+    "metric:metric": [
+      {
+        "body": "people",
+        "confidence": 0.9995,
+        "end": 15,
+        "entities": {},
+        "id": "338077554969492",
+        "name": "metric",
+        "role": "metric",
+        "start": 9,
+        "type": "value",
+        "value": "metric_visitor"
+      }
+    ]
+  },
+  "intents": [
+    {
+      "confidence": 0.9929,
+      "id": "1048434629118182",
+      "name": "inquiry"
+    }
+  ],
+  "speech": {
+    "confidence": 0.7601,
+    "tokens": [
+      {
+        "end": 360,
+        "start": 0,
+        "token": "How"
+      },
+      {
+        "end": 600,
+        "start": 360,
+        "token": "many"
+      },
+      {
+        "end": 840,
+        "start": 600,
+        "token": "people"
+      },
+      {
+        "end": 1320,
+        "start": 840,
+        "token": "between"
+      }
+    ]
+  },
+  "text": "How many people between",
+  "traits": {},
+  "type": "PARTIAL_UNDERSTANDING"
+}
+{
+  "text": "How many people between Tuesday",
+  "type": "PARTIAL_TRANSCRIPTION"
+}
+{
+  "text": "How many people between Tuesday and",
+  "type": "PARTIAL_TRANSCRIPTION"
+}
+{
+  "entities": {
+    "metric:metric": [
+      {
+        "body": "people",
+        "confidence": 0.9995,
+        "end": 15,
+        "entities": {},
+        "id": "338077554969492",
+        "name": "metric",
+        "role": "metric",
+        "start": 9,
+        "type": "value",
+        "value": "metric_visitor"
+      }
+    ],
+    "wit$datetime:datetime": [
+      {
+        "body": "Tuesday",
+        "confidence": 1,
+        "end": 31,
+        "entities": {},
+        "grain": "day",
+        "id": "435010038449213",
+        "name": "wit$datetime",
+        "role": "datetime",
+        "start": 24,
+        "type": "value",
+        "value": "2022-06-14T00:00:00.000-07:00",
+        "values": [
+          {
+            "grain": "day",
+            "type": "value",
+            "value": "2022-06-14T00:00:00.000-07:00"
+          },
+          {
+            "grain": "day",
+            "type": "value",
+            "value": "2022-06-21T00:00:00.000-07:00"
+          },
+          {
+            "grain": "day",
+            "type": "value",
+            "value": "2022-06-28T00:00:00.000-07:00"
+          }
+        ]
+      }
+    ]
+  },
+  "intents": [
+    {
+      "confidence": 0.9996,
+      "id": "1048434629118182",
+      "name": "inquiry"
+    }
+  ],
+  "speech": {
+    "confidence": 0.7485,
+    "tokens": [
+      {
+        "end": 360,
+        "start": 0,
+        "token": "How"
+      },
+      {
+        "end": 600,
+        "start": 360,
+        "token": "many"
+      },
+      {
+        "end": 840,
+        "start": 600,
+        "token": "people"
+      },
+      {
+        "end": 1320,
+        "start": 840,
+        "token": "between"
+      },
+      {
+        "end": 1620,
+        "start": 1320,
+        "token": "Tuesday"
+      }
+    ]
+  },
+  "text": "How many people between Tuesday",
+  "traits": {},
+  "type": "PARTIAL_UNDERSTANDING"
+}
