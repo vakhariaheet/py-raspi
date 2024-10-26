@@ -1,14 +1,13 @@
 import time
-import RPi.GPIO as GPIO
 import adafruit_dht
-
+import board
 
 class DHT11Sensor:
     """
     A class to handle DHT11 temperature and humidity sensor readings using Adafruit library
     """
     
-    def __init__(self, pin=27):  # Default to GPIO 27
+    def __init__(self, pin=board.D27):  # Default to GPIO 27
         """
         Initialize the DHT11 sensor
         
@@ -16,15 +15,11 @@ class DHT11Sensor:
             pin: GPIO pin number where the sensor is connected (default: 4)
         """
         self.pin = pin
-        self.sensor = adafruit_dht.DHT11
+        self.sensor = adafruit_dht.DHT11(self.pin)
         self.temperature = None
         self.humidity = None
         self.last_reading_time = 0
         self.min_interval = 2  # Minimum time (seconds) between readings
-        
-        # Setup GPIO
-        GPIO.setmode(GPIO.BCM)  # Use BCM GPIO numbers
-        GPIO.setup(self.pin, GPIO.IN)
         
     def read_sensor(self):
         """
@@ -39,15 +34,10 @@ class DHT11Sensor:
             return self.temperature, self.humidity
             
         try:
-            # Read temperature and humidity
-            self.humidity, self.temperature = adafruit_dht.read_retry(self.sensor, self.pin)
+            self.temperature = self.sensor.temperature
+            self.humidity = self.sensor.humidity
             self.last_reading_time = current_time
-            
-            if self.humidity is not None and self.temperature is not None:
-                return self.temperature, self.humidity
-            else:
-                print("Failed to get reading. Try again!")
-                return None, None
+            return self.temperature, self.humidity
                 
         except Exception as error:
             print(f"Error reading sensor: {str(error)}")
@@ -84,15 +74,3 @@ class DHT11Sensor:
         if temp is not None:
             return (temp * 9/5) + 32
         return None
-    
-    def cleanup(self):
-        """
-        Clean up GPIO resources
-        """
-        GPIO.cleanup()
-    
-    def __del__(self):
-        """
-        Clean up resources when object is deleted
-        """
-        self.cleanup()
