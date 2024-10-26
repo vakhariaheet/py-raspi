@@ -126,10 +126,7 @@ def initialize_system():
 def main():
     try:
         dht11 = initialize_system()
-        if not dht11:
-            print("Failed to initialize system. Exiting...")
-            return
-
+        print(f"Temperature: {dht11.get_temperature()}")
         state = ApplicationState()
         wit_client = WitAiClient(wit_api_key=os.environ.get("WIT_API_KEY"))
 
