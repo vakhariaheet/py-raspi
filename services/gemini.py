@@ -5,6 +5,7 @@ import os
 from PIL import Image
 import time
 import tempfile
+import re
 
 class GeminiHandler:
     def __init__(self, api_key, language='en'):
@@ -29,6 +30,32 @@ class GeminiHandler:
         # Create temp directory for audio chunks
         self.temp_dir = tempfile.mkdtemp()
     
+    def _clean_and_split_text(self, text):
+        """
+        Clean and split text into natural sentences, handling periods in abbreviations
+        and numbers properly.
+        """
+        # Remove any standalone periods
+        text = re.sub(r'\s*\.\s*', '. ', text)
+        
+        # Fix common abbreviations (add more as needed)
+        common_abbrev = r'(?<!Mr)(?<!Mrs)(?<!Dr)(?<!Ph\.D)(?<!Sr)(?<!Jr)(?<!\s[A-Z])(?<!\d)'
+        
+        # Split on periods followed by space and capital letter or new sentence starters
+        sentences = re.split(f'{common_abbrev}\\.\s+(?=[A-Z]|["\']|[0-9]|I\s)', text)
+        
+        # Clean up each sentence
+        cleaned_sentences = []
+        for sentence in sentences:
+            sentence = sentence.strip()
+            if sentence:
+                # Add period if it's missing
+                if not sentence.endswith(('.', '!', '?')):
+                    sentence += '.'
+                cleaned_sentences.append(sentence)
+        
+        return cleaned_sentences
+
     def _text_to_speech_chunk(self, text, chunk_index):
         """Convert text chunk to speech using gTTS and save as MP3"""
         if not text.strip():
@@ -80,26 +107,34 @@ class GeminiHandler:
                 response = self.model.generate_content(prompt,stream=True)
             
             chunk_index = 0
-            current_chunk = ""
+            buffer = ""
             
             for chunk in response:
                 if hasattr(chunk, 'text'):
-                    # Split on sentence boundaries
-                    sentences = chunk.text.split('.')
-                    for sentence in sentences:
-                        if sentence.strip():
-                            current_chunk += sentence.strip() + "."
-                            
-                            # Process chunk when it reaches a reasonable size or is the last sentence
-                            if len(current_chunk) >= 100 or sentence == sentences[-1]:
-                                print(current_chunk)  # Print the text chunk
-                                
-                                # Convert to speech and play
-                                chunk_path = self._text_to_speech_chunk(current_chunk, chunk_index)
+                    buffer += chunk.text
+                    
+                    # Once we have enough text, process it into natural sentences
+                    if len(buffer) >= 150 or chunk.text.endswith(('.', '!', '?')):
+                        sentences = self._clean_and_split_text(buffer)
+                        
+                        for sentence in sentences:
+                            if sentence.strip():
+                                print(sentence)  # Print the clean sentence
+                                chunk_path = self._text_to_speech_chunk(sentence, chunk_index)
                                 self._play_audio_chunk(chunk_path)
-                                
                                 chunk_index += 1
-                                current_chunk = ""
+                        
+                        buffer = ""  # Clear the buffer after processing
+            
+            # Process any remaining text in the buffer
+            if buffer.strip():
+                sentences = self._clean_and_split_text(buffer)
+                for sentence in sentences:
+                    if sentence.strip():
+                        print(sentence)
+                        chunk_path = self._text_to_speech_chunk(sentence, chunk_index)
+                        self._play_audio_chunk(chunk_path)
+                        chunk_index += 1
             
         except Exception as e:
             print(f"An error occurred: {str(e)}")
