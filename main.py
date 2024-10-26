@@ -23,9 +23,11 @@ def explore_scene():
 
 def main():
     witClient = WitAiClient(wit_api_key=os.environ.get('WIT_API_KEY'));
+    is_recording = False;
     def on_touch(props):
-        is_recording = False;
+    
         if TouchType.SINGLE:
+            print("Single touch detected");
             if is_recording:
                 audio_file = witClient.stop();
                 pygame.mixer.music.load("assets/sfx/start.mp3");
@@ -42,6 +44,7 @@ def main():
         elif TouchType.DOUBLE:
             print("Double touch detected");
             witClient.record(timeout=10);
+            is_recording = True;
             pygame.mixer.music.load("assets/sfx/start.mp3");
         
         print(f'Touch Detected {props}');
