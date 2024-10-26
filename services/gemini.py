@@ -17,8 +17,8 @@ class GeminiHandler:
         """
         # Configure Gemini
         genai.configure(api_key=api_key)
-        self.model = genai.GenerativeModel('gemini-pro')
-        self.vision_model = genai.GenerativeModel('gemini-pro-vision')
+        self.model = genai.GenerativeModel('gemini-1.5-flash')
+        self.vision_model = genai.GenerativeModel('gemini-1.5-flash')
         
         # TTS settings
         self.language = language
