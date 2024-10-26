@@ -6,6 +6,8 @@ from services.gemini import GeminiHandler
 import pygame;
 import os;
 import time;
+from dotenv import load_dotenv;
+load_dotenv();
 dht11 = DHT11(pin=27);
 pygame.init()
 gemini_key = os.environ.get('API_KEY')
