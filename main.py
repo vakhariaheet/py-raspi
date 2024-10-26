@@ -3,7 +3,7 @@ from sensors.touch import TouchSensor, TouchType
 from sensors.temperature import DHT11
 from sensors.camera import CameraSensor
 from services.gemini import GeminiHandler
-from services.wit import WitAiClient
+from services.wit import WitAiClient,IntentType
 import pygame
 import os
 import re
@@ -64,6 +64,8 @@ def create_touch_handler(state, wit_client):
                     print(f"Result: {result}")
                     state.is_recording = False
                     print("Recording stopped")
+                    if intent == IntentType.GPT:
+                        handle_gpt_intent(transcript)
                 else:
                     explore_scene(os.environ.get("API_KEY"))
 
