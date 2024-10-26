@@ -1,24 +1,29 @@
 import time
-import board
-import adafruit_dht
+import RPi.GPIO as GPIO
+import Adafruit_DHT
 
 class DHT11Sensor:
     """
     A class to handle DHT11 temperature and humidity sensor readings using Adafruit library
     """
     
-    def __init__(self, pin=board.D27):
+    def __init__(self, pin=27):  # Default to GPIO 27
         """
         Initialize the DHT11 sensor
         
         Args:
-            pin: Digital pin where the sensor is connected (default: board.D4)
+            pin: GPIO pin number where the sensor is connected (default: 4)
         """
-        self.dht_device = adafruit_dht.DHT11(pin)
+        self.pin = pin
+        self.sensor = Adafruit_DHT.DHT11
         self.temperature = None
         self.humidity = None
         self.last_reading_time = 0
         self.min_interval = 2  # Minimum time (seconds) between readings
+        
+        # Setup GPIO
+        GPIO.setmode(GPIO.BCM)  # Use BCM GPIO numbers
+        GPIO.setup(self.pin, GPIO.IN)
         
     def read_sensor(self):
         """
@@ -34,20 +39,18 @@ class DHT11Sensor:
             
         try:
             # Read temperature and humidity
-            self.temperature = self.dht_device.temperature
-            self.humidity = self.dht_device.humidity
+            self.humidity, self.temperature = Adafruit_DHT.read_retry(self.sensor, self.pin)
             self.last_reading_time = current_time
-            return self.temperature, self.humidity
             
-        except RuntimeError as error:
-            # Errors happen fairly often, DHT's are hard to read, just keep going
-            print(f"Error reading sensor: {error.args[0]}")
-            return None, None
-            
+            if self.humidity is not None and self.temperature is not None:
+                return self.temperature, self.humidity
+            else:
+                print("Failed to get reading. Try again!")
+                return None, None
+                
         except Exception as error:
-            # Other errors are handled here
-            self.dht_device.exit()
-            raise error
+            print(f"Error reading sensor: {str(error)}")
+            return None, None
     
     def get_temperature(self):
         """
@@ -81,8 +84,14 @@ class DHT11Sensor:
             return (temp * 9/5) + 32
         return None
     
+    def cleanup(self):
+        """
+        Clean up GPIO resources
+        """
+        GPIO.cleanup()
+    
     def __del__(self):
         """
         Clean up resources when object is deleted
         """
-        self.dht_device.exit()
+        self.cleanup()
