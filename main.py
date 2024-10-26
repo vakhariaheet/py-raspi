@@ -117,7 +117,7 @@ def initialize_system():
     try:
         load_dotenv()
         pygame.init()
-        return DHT11Sensor(pin=27)
+        return DHT11Sensor()
     except Exception as e:
         print(f"Error initializing system: {str(e)}")
         return None
