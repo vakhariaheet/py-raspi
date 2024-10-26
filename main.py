@@ -6,12 +6,15 @@ from services.gemini import GeminiHandler
 from services.wit import WitAiClient
 import pygame
 import os
+import re
 import time
 from dotenv import load_dotenv
+
 
 class ApplicationState:
     def __init__(self):
         self.is_recording = False
+
 
 def explore_scene(gemini_key):
     try:
@@ -24,23 +27,37 @@ def explore_scene(gemini_key):
             "Be detailed but natural, avoiding any mention of an image. "
             "Use only elements present in the scene. Keep your description "
             "concise, under 100 words, while capturing the essence of what's visible.",
-            image_path="image.jpg"
+            image_path="image.jpg",
         )
         print("Text to speech completed")
     except Exception as e:
         print(f"Error in explore_scene: {str(e)}")
 
+
+def handle_gpt_intent(transcript: str):
+    try:
+        prompt = re.replace(r"Hey Visio", "", transcript)
+        print(f"Prompt: {prompt}")
+        gemini = GeminiHandler(api_key=os.environ.get("API_KEY"))
+        gemini.generate_with_tts(f"Generate text based on the provided prompt. Remove any phrases like 'ask visio' or 'hey visio.' Ensure the text is concise (under 100 words unless otherwise specified). Avoid introductory phrases such as 'here is the generated text.' prompt: {prompt}")
+        print("Text to speech completed");
+    except Exception as e:
+        print(f"Error handling GPT intent: {str(e)}")
+
+
 def create_touch_handler(state, wit_client):
     def on_touch(props):
         try:
-            print('Is recording: ', state.is_recording)
-            
+            print("Is recording: ", state.is_recording)
+
             if props == TouchType.SINGLE:
                 print("Single touch detected")
                 if state.is_recording:
                     audio_file = wit_client.stop()
                     play_sound("assets/sfx/start.mp3")
-                    intent, data, transcript,result = wit_client.process_audio(audio_file)
+                    intent, data, transcript, result = wit_client.process_audio(
+                        audio_file
+                    )
                     print(f"Intent: {intent}")
                     print(f"Data: {data}")
                     print(f"Transcript: {transcript}")
@@ -48,20 +65,21 @@ def create_touch_handler(state, wit_client):
                     state.is_recording = False
                     print("Recording stopped")
                 else:
-                    explore_scene(os.environ.get('API_KEY'))
+                    explore_scene(os.environ.get("API_KEY"))
 
             elif props == TouchType.DOUBLE:
                 print("Double touch detected")
                 wit_client.record(timeout=10)
                 state.is_recording = True
                 play_sound("assets/sfx/end.mp3")
-            
-            print(f'Touch Detected {props}')
-            
+
+            print(f"Touch Detected {props}")
+
         except Exception as e:
             print(f"Error in touch handler: {str(e)}")
-    
+
     return on_touch
+
 
 def play_sound(sound_file):
     try:
@@ -69,6 +87,7 @@ def play_sound(sound_file):
         pygame.mixer.music.play()
     except Exception as e:
         print(f"Error playing sound: {str(e)}")
+
 
 def initialize_system():
     try:
@@ -79,6 +98,7 @@ def initialize_system():
         print(f"Error initializing system: {str(e)}")
         return None
 
+
 def main():
     try:
         dht11 = initialize_system()
@@ -87,16 +107,16 @@ def main():
             return
 
         state = ApplicationState()
-        wit_client = WitAiClient(wit_api_key=os.environ.get('WIT_API_KEY'))
-        
+        wit_client = WitAiClient(wit_api_key=os.environ.get("WIT_API_KEY"))
+
         touch_handler = create_touch_handler(state, wit_client)
         touch_sensor = TouchSensor(17, touch_handler)
-        
+
         print("Touch sensor is ready! Press Ctrl+C to exit")
         print("Waiting for touches...")
-        
+
         touch_sensor.wait_listener()
-        
+
     except KeyboardInterrupt:
         print("\nApplication terminated by user")
     except Exception as e:
@@ -105,5 +125,6 @@ def main():
         GPIO.cleanup()
         pygame.quit()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()
