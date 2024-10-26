@@ -5,9 +5,9 @@ class CameraSensor:
         self.camera = Camera()
 
     def capture(self, filename):
-        self.camera.start_preview();
+        # self.camera.start_preview();
         self.camera.take_photo(filename);
-        self.camera.stop_preview();
+        # self.camera.stop_preview();
     
 
     def close(self):
