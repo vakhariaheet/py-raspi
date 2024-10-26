@@ -16,6 +16,16 @@ class IntentType(Enum):
     MAPS = "maps"
     GPT = "gpt"
 
+def parse_wit_respose(response:str)->Dict:
+    try:
+        # First Get Last JSON object from the string response using regex \n{.*}$
+        response = response.split(r"\n(?={)")[-1];
+        # Parse the JSON object
+        return json.loads(response)
+    except Exception as e:
+        print(f"Error parsing Wit.ai response: {str(e)}")
+        return {}
+
 class WitAiClient:
     def __init__(self, wit_api_key: str, temp_dir: str = "/tmp"):
         """Initialize WitAi client with API key and temporary directory for audio files.
@@ -138,7 +148,7 @@ class WitAiClient:
                 print(f"Wit.ai API error response: {resp.text}")
                 raise Exception(f"Wit.ai API error: {resp.status_code} - {resp.text}")
                 
-            result = resp.json()
+            result = parse_wit_respose(resp.text)
             
             # Extract intent
             intent = None
