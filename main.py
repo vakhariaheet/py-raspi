@@ -40,10 +40,11 @@ def create_touch_handler(state, wit_client):
                 if state.is_recording:
                     audio_file = wit_client.stop()
                     play_sound("assets/sfx/start.mp3")
-                    intent, data, transcript = wit_client.process_audio(audio_file)
+                    intent, data, transcript,result = wit_client.process_audio(audio_file)
                     print(f"Intent: {intent}")
                     print(f"Data: {data}")
                     print(f"Transcript: {transcript}")
+                    print(f"Result: {result}")
                     state.is_recording = False
                     print("Recording stopped")
                 else:

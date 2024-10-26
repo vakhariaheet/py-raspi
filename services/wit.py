@@ -133,7 +133,7 @@ class WitAiClient:
                     'content-type': 'audio/wav'  # Added content type parameter
                 }
             )
-            
+            print(f"Wit.ai API response: {resp.text}")
             if resp.status_code != 200:
                 print(f"Wit.ai API error response: {resp.text}")
                 raise Exception(f"Wit.ai API error: {resp.status_code} - {resp.text}")
@@ -159,7 +159,7 @@ class WitAiClient:
             # Get transcript
             transcript = result.get('text', '')
             
-            return intent, data, transcript
+            return intent, data, transcript, result
             
         except Exception as e:
             print(f"Error processing audio: {str(e)}")
