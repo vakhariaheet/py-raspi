@@ -1,8 +1,9 @@
 import RPi.GPIO as GPIO
 from sensors.touch import TouchSensor, TouchType
-from sensors.temperature import DHT11
+from sensors.temperature import DHT11Sensor
 from sensors.camera import CameraSensor
 from services.gemini import GeminiHandler
+from gtts import gTTS
 from services.wit import WitAiClient,IntentType
 import pygame
 import os
@@ -81,7 +82,12 @@ def create_touch_handler(state, wit_client):
                     if intent == IntentType.GPT:
                         handle_gpt_intent(transcript)
                     elif intent == IntentType.CURRENCY:
-                        handle_currency_intent()
+                        handle_currency_intent();
+                    elif intent == IntentType.TEMPERATURE:
+                        temperature, humidity = DHT11Sensor().read_sensor()
+                        gTTS(f"The temperature is {temperature} degrees Celsius and humidity is {humidity} percent", lang="en").save("output.mp3")
+                        play_sound("output.mp3")
+                        
                 else:
                     explore_scene(os.environ.get("API_KEY"))
 
@@ -111,7 +117,7 @@ def initialize_system():
     try:
         load_dotenv()
         pygame.init()
-        return DHT11(pin=27)
+        return DHT11Sensor(pin=27)
     except Exception as e:
         print(f"Error initializing system: {str(e)}")
         return None
