@@ -85,6 +85,7 @@ def create_touch_handler(state, wit_client):
                         handle_currency_intent();
                     elif intent == IntentType.TEMPERATURE:
                         temperature, humidity = DHT11Sensor().read_sensor()
+                        print(f"Temperature: {temperature}°C, Humidity: {humidity}%")
                         gTTS(f"The temperature is {temperature} degrees Celsius and humidity is {humidity} percent", lang="en").save("output.mp3")
                         play_sound("output.mp3")
                         
