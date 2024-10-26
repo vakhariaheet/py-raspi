@@ -16,7 +16,7 @@ class DHT11Sensor:
             pin: GPIO pin number where the sensor is connected (default: 4)
         """
         self.pin = pin
-        self.sensor = Adafruit_DHT.DHT11
+        self.sensor = adafruit_dht.DHT11
         self.temperature = None
         self.humidity = None
         self.last_reading_time = 0
@@ -40,7 +40,7 @@ class DHT11Sensor:
             
         try:
             # Read temperature and humidity
-            self.humidity, self.temperature = Adafruit_DHT.read_retry(self.sensor, self.pin)
+            self.humidity, self.temperature = adafruit_dht.read_retry(self.sensor, self.pin)
             self.last_reading_time = current_time
             
             if self.humidity is not None and self.temperature is not None:
