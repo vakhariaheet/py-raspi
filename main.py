@@ -1,61 +1,108 @@
-import RPi.GPIO as GPIO;
-from sensors.touch import TouchSensor,TouchType;
-from sensors.temperature import DHT11;
-from sensors.camera import CameraSensor;
+import RPi.GPIO as GPIO
+from sensors.touch import TouchSensor, TouchType
+from sensors.temperature import DHT11
+from sensors.camera import CameraSensor
 from services.gemini import GeminiHandler
-from services.wit import WitAiClient;
-import pygame;
-import os;
-import time;
-from dotenv import load_dotenv;
-load_dotenv();
-dht11 = DHT11(pin=27);
-pygame.init()
-gemini_key = os.environ.get('API_KEY')
+from services.wit import WitAiClient
+import pygame
+import os
+import time
+from dotenv import load_dotenv
 
-def explore_scene():
-    CameraSensor().capture("image.jpg");
-    print("Image captured");
-    print(f"Gemini Key: {gemini_key}");
-    gemini = GeminiHandler(api_key=gemini_key);
-    gemini.generate_with_tts("Describe this scene as if narrating to someone who can't see it. Be detailed but natural, avoiding any mention of an image. Use only elements present in the scene. Keep your description concise, under 100 words, while capturing the essence of what's visible.",image_path="image.jpg");
-    print("Text to speech completed");
+class ApplicationState:
+    def __init__(self):
+        self.is_recording = False
+
+def explore_scene(gemini_key):
+    try:
+        CameraSensor().capture("image.jpg")
+        print("Image captured")
+        print(f"Gemini Key: {gemini_key}")
+        gemini = GeminiHandler(api_key=gemini_key)
+        gemini.generate_with_tts(
+            "Describe this scene as if narrating to someone who can't see it. "
+            "Be detailed but natural, avoiding any mention of an image. "
+            "Use only elements present in the scene. Keep your description "
+            "concise, under 100 words, while capturing the essence of what's visible.",
+            image_path="image.jpg"
+        )
+        print("Text to speech completed")
+    except Exception as e:
+        print(f"Error in explore_scene: {str(e)}")
+
+def create_touch_handler(state, wit_client):
+    def on_touch(props):
+        try:
+            print('Is recording: ', state.is_recording)
+            
+            if props == TouchType.SINGLE:
+                print("Single touch detected")
+                if state.is_recording:
+                    audio_file = wit_client.stop()
+                    play_sound("assets/sfx/start.mp3")
+                    intent, data, transcript = wit_client.process_audio(audio_file)
+                    print(f"Intent: {intent}")
+                    print(f"Data: {data}")
+                    print(f"Transcript: {transcript}")
+                    state.is_recording = False
+                    print("Recording stopped")
+                else:
+                    explore_scene(os.environ.get('API_KEY'))
+
+            elif props == TouchType.DOUBLE:
+                print("Double touch detected")
+                wit_client.record(timeout=10)
+                state.is_recording = True
+                play_sound("assets/sfx/start.mp3")
+            
+            print(f'Touch Detected {props}')
+            
+        except Exception as e:
+            print(f"Error in touch handler: {str(e)}")
+    
+    return on_touch
+
+def play_sound(sound_file):
+    try:
+        pygame.mixer.music.load(sound_file)
+        pygame.mixer.music.play()
+    except Exception as e:
+        print(f"Error playing sound: {str(e)}")
+
+def initialize_system():
+    try:
+        load_dotenv()
+        pygame.init()
+        return DHT11(pin=27)
+    except Exception as e:
+        print(f"Error initializing system: {str(e)}")
+        return None
 
 def main():
-    witClient = WitAiClient(wit_api_key=os.environ.get('WIT_API_KEY'));
-    is_recording = False;
-    def on_touch(props):
-        global is_recording;
-        print('Is recording: ', is_recording);
-        if TouchType.SINGLE:
-            print("Single touch detected");
-            if is_recording:
-                audio_file = witClient.stop();
-                pygame.mixer.music.load("assets/sfx/start.mp3");
-                intent, data, transcript = witClient.process_audio(audio_file)
-                print(f"Intent: {intent}");
-                print(f"Data: {data}");
-                print(f"Transcript: {transcript}");
-                is_recording = False;
-                print("Recording stopped");
-            else:
-                explore_scene();
+    try:
+        dht11 = initialize_system()
+        if not dht11:
+            print("Failed to initialize system. Exiting...")
+            return
 
-        elif TouchType.DOUBLE:
-            print("Double touch detected");
-            witClient.record(timeout=10);
-            is_recording = True;
-            pygame.mixer.music.load("assets/sfx/start.mp3");
+        state = ApplicationState()
+        wit_client = WitAiClient(wit_api_key=os.environ.get('WIT_API_KEY'))
         
-        print(f'Touch Detected {props}');
-    
-    touch_sensor = TouchSensor(17,on_touch);
-    print("Touch sensor is ready! Press Ctrl+C to exit")
-    print("Waiting for touches...")
-    
-    touch_sensor.wait_listener();
-
-
+        touch_handler = create_touch_handler(state, wit_client)
+        touch_sensor = TouchSensor(17, touch_handler)
+        
+        print("Touch sensor is ready! Press Ctrl+C to exit")
+        print("Waiting for touches...")
+        
+        touch_sensor.wait_listener()
+        
+    except KeyboardInterrupt:
+        print("\nApplication terminated by user")
+    except Exception as e:
+        print(f"Error in main: {str(e)}")
+    finally:
+        GPIO.cleanup()
+        pygame.quit()
 
 if __name__ == '__main__':
-    main();
+    main()
