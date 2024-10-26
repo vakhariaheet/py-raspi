@@ -28,6 +28,7 @@ def main():
         if TouchType.SINGLE:
             if is_recording:
                 audio_file = witClient.stop();
+                pygame.mixer.music.load("assets/sfx/start.mp3");
                 intent, data, transcript = witClient.process_audio(audio_file)
                 print(f"Intent: {intent}");
                 print(f"Data: {data}");
@@ -41,6 +42,7 @@ def main():
         elif TouchType.DOUBLE:
             print("Double touch detected");
             witClient.record(timeout=10);
+            pygame.mixer.music.load("assets/sfx/start.mp3");
         
         print(f'Touch Detected {props}');
     
