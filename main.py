@@ -68,6 +68,7 @@ def create_touch_handler(state, wit_client):
             if props == TouchType.SINGLE:
                 print("Single touch detected")
                 if state.is_recording:
+                    state.is_recording = False
                     audio_file = wit_client.stop()
                     play_sound("assets/sfx/start.mp3")
                     intent, data, transcript, result = wit_client.process_audio(
@@ -77,7 +78,7 @@ def create_touch_handler(state, wit_client):
                     print(f"Data: {data}")
                     print(f"Transcript: {transcript}")
                     print(f"Result: {result}")
-                    state.is_recording = False
+                    
                     print("Recording stopped")
                     if intent == IntentType.GPT:
                         handle_gpt_intent(transcript)
