@@ -15,7 +15,7 @@ class DHT11Sensor:
             pin: GPIO pin number where the sensor is connected (default: 4)
         """
         self.pin = pin
-        self.sensor = adafruit_dht.DHT11(self.pin)
+        self.sensor = adafruit_dht.DHT11(self.pin,use_pulseio=False)
         self.temperature = None
         self.humidity = None
         self.last_reading_time = 0
